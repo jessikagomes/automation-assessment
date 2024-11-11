@@ -1,15 +1,25 @@
 // @ts-check
 const { test, expect } = require('@playwright/test')
+import { HomePage } from '../pages/HomePage'
+import { LoginPage } from '../pages/LoginPage'
+
+const emailUserA = 'usera@test.com'
+const passwordUserA = 'test123'
+const usernameA = 'userA'
 
 test('login with valid credencials', async ({ page }) => {
-    await page.goto('https://automationexercise.com/')
+    
+    const homePage = new HomePage(page)
+    const loginPage = new LoginPage(page)
 
-    await page.getByRole('button', {name: 'Consent'}).click()
-    await page.getByText('Signup / Login').click()
-    await page.locator('.login-form').getByPlaceholder('Email Address').fill('usera@test.com')
-    await page.locator('.login-form').getByPlaceholder('Password').fill('test123')
-    await page.getByRole('button', {name: 'login'}).click()
-    await expect(page.locator('#header')).toContainText('Logged in as userA')
+    await homePage.goto()  
+    await homePage.acceptConsent()
+    await homePage.clickSignupLogin()
+    await loginPage.enterEmail(emailUserA)
+    await loginPage.enterPassword(passwordUserA)
+    await loginPage.loginButton.click()
+    await loginPage.expectLoggedIn(usernameA)
+    await homePage.clickLogout()
 })
 
 test('register a new user', async ({ page }) => {
